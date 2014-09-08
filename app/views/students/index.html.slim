@@ -1,0 +1,45 @@
+h1 Listing students
+
+table.table.table-striped.table-bordered
+  thead
+    tr
+      th Student num
+      th Availability
+      th Gender
+      th Years fluency
+      th Master
+      th Exchange
+      th It oriented
+      th Grade guess
+      th Hours per week
+      th Introverted
+      th Teamwork ability
+      th Teamwork enjoyment
+      th Survey answered
+      th
+      th
+      th
+
+  tbody
+    - @students.each do |student|
+      tr
+        td = student.student_num
+        td = student.availability
+        td = student.gender
+        td = student.years_fluency
+        td = student.master
+        td = student.exchange
+        td = student.it_oriented
+        td = student.grade_guess
+        td = student.hours_per_week
+        td = student.introverted
+        td = student.teamwork_ability
+        td = student.teamwork_enjoyment
+        td = student.survey_answered
+        td = link_to 'Show', student
+        td = link_to 'Edit', edit_student_path(student)
+        td = link_to 'Destroy', student, data: {:confirm => 'Are you sure?'}, :method => :delete
+
+br
+
+= link_to 'New Student', new_student_path

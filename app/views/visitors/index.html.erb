@@ -1,1 +1,27 @@
-<h3>Welcome</h3>
+<h3>Raw printout of CSV file</h3>
+
+<table class="table table-striped table-bordered">
+
+  <thead>
+    <tr>
+      <% @header.each do |col_head| %>
+        <th>
+          <%= col_head.to_s %>
+        </th>
+      <% end %>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @rows.each do |row| %>
+      <tr>
+        <% row.each do |line| %>
+          <td>
+            <%= line.to_s %>
+          </td>
+        <% end %>
+      </tr>
+    <% end %>
+  </tbody>
+
+</table>

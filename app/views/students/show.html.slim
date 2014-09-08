@@ -1,0 +1,45 @@
+p#notice = notice
+
+p
+  strong Student num:
+  = @student.student_num
+p
+  strong Availability:
+  = @student.availability
+p
+  strong Gender:
+  = @student.gender
+p
+  strong Years fluency:
+  = @student.years_fluency
+p
+  strong Master:
+  = @student.master
+p
+  strong Exchange:
+  = @student.exchange
+p
+  strong It oriented:
+  = @student.it_oriented
+p
+  strong Grade guess:
+  = @student.grade_guess
+p
+  strong Hours per week:
+  = @student.hours_per_week
+p
+  strong Introverted:
+  = @student.introverted
+p
+  strong Teamwork ability:
+  = @student.teamwork_ability
+p
+  strong Teamwork enjoyment:
+  = @student.teamwork_enjoyment
+p
+  strong Survey answered:
+  = @student.survey_answered
+
+= link_to 'Edit', edit_student_path(@student)
+'|
+= link_to 'Back', students_path
