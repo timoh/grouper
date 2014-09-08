@@ -2,13 +2,13 @@ require 'csv'
 
 class RawSurveyToGroup
   
-  def RawSurveyToGroup.generate_digest(file) # generates digest out of the header row, NOT whole file, to check that the headers haven't changed .. content should be allowed to change!
-    file = CSV.read(file)
+  def RawSurveyToGroup.generate_digest(filename) # generates digest out of the header row, NOT whole file, to check that the headers haven't changed .. content should be allowed to change!
+    file = CSV.read(filename)
     return Digest::SHA2.hexdigest(file.first.join(',')).to_s
   end
 
-  def RawSurveyToGroup.compare_to_earlier_digest(file)
-    RawSurveyToGroup.generate_digest(file) == RawSurveyToGroup.saved_digest ? true : false
+  def RawSurveyToGroup.compare_to_earlier_digest(filename)
+    RawSurveyToGroup.generate_digest(filename) == RawSurveyToGroup.saved_digest ? true : false
   end
 
   def RawSurveyToGroup.saved_digest
@@ -16,13 +16,13 @@ class RawSurveyToGroup
   end
 
   def RawSurveyToGroup.read_file(options = {}) #set your own CSV filename
-    options[:file] ||= "./public/survey.csv"
-    return CSV.read(options[:file])
+    options[:filename] ||= "./public/survey.csv"
+    return CSV.read(options[:filename])
   end
 
   def RawSurveyToGroup.print_raw
     file = RawSurveyToGroup.read_file
-    raise 'Filename digest has changed' unless RawSurveyToGroup.compare_to_earlier_digest(file)
+    raise 'Filename digest has changed' unless RawSurveyToGroup.compare_to_earlier_digest("./public/survey.csv")
     return file
   end
 

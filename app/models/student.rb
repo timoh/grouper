@@ -14,6 +14,8 @@ class Student
   field :teamwork_enjoyment, type: Integer
   field :survey_answered, type: DateTime
 
+  belongs_to :group
+
   validates_uniqueness_of :student_num
   validates_numericality_of :years_fluency, :grade_guess, :hours_per_week, :introverted, :teamwork_ability, :teamwork_enjoyment
   validates_length_of :student_num, minimum: 5, maximum: 10
