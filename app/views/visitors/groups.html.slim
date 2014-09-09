@@ -1,0 +1,20 @@
+h1 Listing groups
+
+p Total student count: #{@students.count}
+
+- @groups.each do |group|
+
+  h2 Members of group
+
+  p Size of group: #{group.students.count}
+  p Diversity score: #{DiversityScore.calculate_for_group(group)}
+    
+
+  table
+    - group.students.each do |student|
+      tr
+        td = student.student_num
+        td = student.availability
+
+
+  

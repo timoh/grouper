@@ -2,6 +2,11 @@ class Student
   include Mongoid::Document
   field :student_num, type: String
   field :availability, type: String
+
+  field :availability_d, type: Boolean
+  field :availability_a, type: Boolean
+  field :availability_n, type: Boolean
+
   field :gender, type: String
   field :years_fluency, type: Integer
   field :master, type: Mongoid::Boolean
@@ -13,13 +18,15 @@ class Student
   field :teamwork_ability, type: Integer
   field :teamwork_enjoyment, type: Integer
   field :survey_answered, type: DateTime
+  field :overlap_hash, type: Hash
 
   belongs_to :group
+  has_and_belongs_to_many :overlap_scores
 
   validates_uniqueness_of :student_num
   validates_numericality_of :years_fluency, :grade_guess, :hours_per_week, :introverted, :teamwork_ability, :teamwork_enjoyment
   validates_length_of :student_num, minimum: 5, maximum: 10
-  validates_presence_of :availability, :survey_answered, :student_num, :grade_guess, :hours_per_week
+  validates_presence_of :availability, :survey_answered, :student_num, :grade_guess, :hours_per_week, :availability_d, :availability_a, :availability_n
 
   def Student.ingest_csv
     dump = RawSurveyToGroup.dump_for_ingest
@@ -46,8 +53,11 @@ class Student
 
       student_availability = String.new
       student_availability << 'D' if row[2].include?('During') # During school days
+      row[2].include?('During') ? student.availability_d = true : student.availability_d = false
       student_availability << 'A' if row[2].include?('After') # After school
+      row[2].include?('After') ? student.availability_a = true : student.availability_a = false
       student_availability << 'N' if row[2].include?('Non') # Non-school days (e.g. Sat, Sun)
+      row[2].include?('Non') ? student.availability_n = true : student.availability_n = false
 
       student.availability = student_availability
 
