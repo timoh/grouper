@@ -20,7 +20,7 @@ class Student
   field :survey_answered, type: DateTime
   field :overlap_hash, type: Hash
 
-  belongs_to :group
+  belongs_to :group, dependent: :nullify
   has_and_belongs_to_many :overlap_scores
 
   validates_uniqueness_of :student_num
@@ -52,19 +52,34 @@ class Student
       #Student availability
 
       student_availability = String.new
-      student_availability << 'D' if row[2].include?('During') # During school days
-      row[2].include?('During') ? student.availability_d = true : student.availability_d = false
-      student_availability << 'A' if row[2].include?('After') # After school
-      row[2].include?('After') ? student.availability_a = true : student.availability_a = false
-      student_availability << 'N' if row[2].include?('Non') # Non-school days (e.g. Sat, Sun)
-      row[2].include?('Non') ? student.availability_n = true : student.availability_n = false
+
+      if row[2].include?('During')
+        student_availability << 'D'
+        student.availability_d = true
+      else
+        student.availability_d = false
+      end
+
+      if row[2].include?('After')
+        student_availability << 'A'
+        student.availability_a = true
+      else
+        student.availability_a = false
+      end
+
+      if row[2].include?('Non')
+        student_availability << 'N'
+        student.availability_n = true
+      else
+        student.availability_n = false
+      end
 
       student.availability = student_availability
 
       #Student gender
-      if row[3].include?('Female')
+      if row[3] == 'Female'
         student.gender = 'F'
-      elsif row[3].include?('Other')
+      elsif row[3] == 'Other'
         student.gender = 'O'
       elsif row[3].length <= 0
         student.gender = ''
