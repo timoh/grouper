@@ -8,9 +8,12 @@ feature 'Home page' do
   #   Given I am a visitor
   #   When I visit the home page
   #   Then I see "Welcome"
-  scenario 'visit the home page' do
+  scenario 'show the raw CSV printout' do
     visit root_path
-    expect(page).to have_content 'Welcome'
+    expect(page).to have_content 'Male'
+    expect(page).to have_content 'Female'
+    expect(page).to have_content 'Master'
+    expect(page).to have_content 'Bachelor'
   end
 
 end
