@@ -29,6 +29,22 @@ class Student
   validates_presence_of :availability, :survey_answered, :student_num, :grade_guess, :hours_per_week, :availability_d, :availability_a, :availability_n
 
 
+    def Student.prepare_unassigned_students_array
+    unassigned_students = Array.new
+
+    # load unassigned students into the unassigned_students array (instead of the lazy load mongoid search object)
+    ua_students = Student.in(group_id: nil) # return only those students that do not have a group
+    ua_students.each do |student|
+      unassigned_students << student
+    end
+
+    # shuffle the array with Ruby's array shuffling functionality
+    unassigned_students = unassigned_students.shuffle
+
+    return unassigned_students
+
+  end
+
   def Student.prepare_unassigned_students_sorted_array
     unassigned_students = Array.new
 

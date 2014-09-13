@@ -1,5 +1,12 @@
 require 'rails_helper'
 
 RSpec.describe DiversityScore, :type => :model do
-  pending "add some examples to (or delete) #{__FILE__}"
+  
+  it "it calculates a score for a group" do
+    group = FactoryGirl.create(:group)
+    score = DiversityScore.calculate_for_group(group)
+
+    expect(score).to be_a(Fixnum)
+
+  end
 end

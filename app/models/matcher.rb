@@ -5,7 +5,7 @@ class Matcher
     record_high = -999
     iterations = 0
 
-    while(Matcher.prepare_unassigned_students_array.size > 0)
+    while(Student.prepare_unassigned_students_array.size > 0)
       iterations += 1
 
       group = Matcher.create_one_sorted_group
@@ -20,7 +20,7 @@ class Matcher
 
     end
 
-    puts 'Unassigned students: '+Matcher.prepare_unassigned_students_array.size.to_s
+    puts 'Unassigned students: '+Student.prepare_unassigned_students_array.size.to_s
     puts 'Groups: '+Group.all.count.to_s
     puts 'Smallest group score: '+Group.min(:diversity_score).to_s
 
@@ -31,7 +31,7 @@ class Matcher
     record_high = -999
     iterations = 0
 
-    while(Matcher.prepare_unassigned_students_array.size > 0)
+    while(Student.prepare_unassigned_students_array.size > 0)
       iterations += 1
 
       group = Matcher.create_one_sorted_group
@@ -46,14 +46,14 @@ class Matcher
 
     end
 
-    puts 'Unassigned students: '+Matcher.prepare_unassigned_students_array.size.to_s
+    puts 'Unassigned students: '+Student.prepare_unassigned_students_array.size.to_s
     puts 'Groups: '+Group.all.count.to_s
     puts 'Smallest group score: '+Group.min(:diversity_score).to_s
 
   end
 
   def Matcher.create_one_random_group(options = {}) # default group size is 5
-    unassigned_students = Matcher.prepare_unassigned_students_array
+    unassigned_students = Student.prepare_unassigned_students_array
 
     if unassigned_students.size <= 0 then raise '0 unassigned students -- cannot create a new group!' end
 
@@ -171,27 +171,11 @@ class Matcher
 
   end
 
-  def Matcher.prepare_unassigned_students_array
-    unassigned_students = Array.new
-
-    # load unassigned students into the unassigned_students array (instead of the lazy load mongoid search object)
-    ua_students = Student.in(group_id: nil) # return only those students that do not have a group
-    ua_students.each do |student|
-      unassigned_students << student
-    end
-
-    # shuffle the array with Ruby's array shuffling functionality
-    unassigned_students = unassigned_students.shuffle
-
-    return unassigned_students
-
-  end
-
   def Matcher.create_random_groups
     all_groups = Array.new
 
     # prepare randomized array of unassigned students
-    unassigned_students = Matcher.prepare_unassigned_students_array
+    unassigned_students = Student.prepare_unassigned_students_array
 
     # find optimal size for groups
     group_size = Group.calculate_group_size
