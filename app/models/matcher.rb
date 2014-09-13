@@ -41,7 +41,7 @@ class Matcher
     while(Matcher.prepare_unassigned_students_array.size > 0)
       iterations += 1
 
-      group = Matcher.create_one_group
+      group = Matcher.create_one_sorted_group
       outcome = DiversityScore.calculate_for_group(group)
 
       unless DiversityScore.calculate_for_group(group) > 0 then group.destroy end
