@@ -135,7 +135,7 @@ class Matcher
     unassigned_students = Array.new
 
     # load unassigned students into the unassigned_students array (instead of the lazy load mongoid search object)
-    ua_students = Student.where(group_id: nil).order_by(:availability, 1) # return only those students that do not have a group
+    ua_students = Student.where(group_id: nil).order_by(:availability.asc) # return only those students that do not have a group
 
     # add items in array in reverse order for "pop" to work correctly
 
