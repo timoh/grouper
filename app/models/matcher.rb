@@ -105,21 +105,36 @@ class Matcher
     while(unassigned_students.length > 0)
       group = Group.new
       group_full = false
+      unassigned_students = Matcher.prepare_unassigned_students_sorted_array
+      group_baseline_availability_req = "" # this is a string with either D, A or N to denote what is the first student's requirement
+
+      puts 'Unassigned students to be put into groups: '+unassigned_students.size.to_s
 
       while(!group_full)
 
+        if ( group_baseline_availability_req == "" ) # nothing has been set
+          first_student = unassigned_students.first
+          group_baseline_availability_req = first_student.availability.split.first # take first availability item from student and make it the point of the group
+          
+          puts 'Group baseline availability requirement is: '+group_baseline_availability_req.to_s
+
+          group.students << first_student
+          group.save!
+        end
+
         # iterate over the remaining students and only pop students which are feasible
 
-        # unassigned_students.each_pair do |key, value|
-        #     # TODO!!!!
-        # end
+        candidate = unassigned_students.pop
 
-        group.students << unassigned_students.pop
-        group.save!
+        if candidate.availability.split.first.include?(group_baseline_availability_req)
+          puts 'Successful match:'+candidate.availability.first.split.to_s
+          group.students << candidate
+          group.save!
+        end
 
-        if unassigned_students.length <= 0 then break end
+        if Matcher.prepare_unassigned_students_sorted_array.length <= 0 then break end
         if group.students.count >= group_size then group_full = true end
-        #puts 'Group current size: '+group.size.to_s+' vs. max group size: '+group_size.to_s
+        # puts 'Group current size: '+group.students.size.to_s+' vs. max group size: '+group_size.to_s
       end
 
         if group.students.count > 0
@@ -135,7 +150,7 @@ class Matcher
     unassigned_students = Array.new
 
     # load unassigned students into the unassigned_students array (instead of the lazy load mongoid search object)
-    ua_students = Student.where(group_id: nil).order_by(:availability, 1) # return only those students that do not have a group
+    ua_students = Student.where(group_id: nil).order_by(:availability.asc) # return only those students that do not have a group
 
     # add items in array in reverse order for "pop" to work correctly
 
