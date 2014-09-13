@@ -1,5 +1,52 @@
 class DiversityScore
 
+  def DiversityScore.valid?(group)
+    validity = true
+
+    d_available = true
+    a_available = true
+    n_available = true
+
+    grade_guess_close = true
+    hours_per_week_close = true
+
+    grade_guess_delta = ((Student.max(:grade_guess) - Student.min(:grade_guess))/2).ceil
+    hours_per_week_delta = ((Student.max(:hours_per_week) - Student.min(:hours_per_week))/2).ceil
+
+    hours_min = 0
+    hours_max = 0
+
+    grade_min = 0
+    grade_max = 0
+
+    group.students.each do |student|
+      # for each student, set group availability of certain time range to false even if only one cannot make that time range
+      unless student.availability_d then d_available = false end
+      unless student.availability_a then a_available = false end
+      unless student.availability_n then n_available = false end 
+
+      if student.grade_guess > grade_max then grade_max = student.grade_guess end
+      if student.grade_guess < grade_min then grade_min = student.grade_guess end
+
+      if student.hours_per_week > hours_max then hours_max = student.hours_per_week end
+      if student.hours_per_week < hours_min then hours_min = student.hours_per_week end 
+
+    end
+
+    unless d_available || a_available || n_available then validity = false end
+
+      puts (grade_max - grade_min)
+      puts grade_guess_delta
+      puts (hours_max - hours_min)
+      puts hours_per_week_delta
+
+    if (grade_max - grade_min) > grade_guess_delta then validity = false end
+    if (hours_max - hours_min) > hours_per_week_delta then validity = false end
+
+    return validity
+  end
+
+
   def DiversityScore.calculate_for_group(group)
 
     diversity_score = 0

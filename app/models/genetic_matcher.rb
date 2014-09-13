@@ -4,7 +4,14 @@ class GeneticMatcher
   def GeneticMatcher.do_match
 
     # 1. [Start] Generate random population of n chromosomes (suitable solutions for the problem)
+    GeneticMatcher.step_one_start(10)
+
+
+
+
     # 2. [Fitness] Evaluate the fitness f(x) of each chromosome x in the population
+
+    GeneticMatcher.step_two_fitness
     # 3. [New population] Create a new population by repeating following steps until the new population is complete
     #   3.1 [Selection] Select two parent chromosomes from a population according to their fitness (the better fitness, the bigger chance to be selected)
     #   3.2 [Crossover] With a crossover probability cross over the parents to form a new offspring (children). If no crossover was performed, offspring is an exact copy of parents.
@@ -16,23 +23,50 @@ class GeneticMatcher
 
   end
 
-  def GeneticMatcher.step_one_start # 1. [Start] Generate random population of n chromosomes (suitable solutions for the problem)
-    Group.destroy_all
-    students = Student.all.to_a
-    options = {:min_size => 4, :max_size => 5}
-    group_size = Group.calculate_group_size(options)
-    group_count = (students.size / group_size.to_f).ceil
+  def GeneticMatcher.step_one_start(pop_size) # 1. [Start] Generate random population of n chromosomes (suitable solutions for the problem)
+    population = Array.new
 
-    group_count.times { 
-      grp = Group.new 
-      group_size.times {  
-        grp.students << students.pop
+    pop_size.times {
+      groups_array = Array.new
+      students = Student.all.to_a.shuffle
+      options = {:min_size => 4, :max_size => 5}
+      group_size = Group.calculate_group_size(options)
+      group_count = (students.size / group_size.to_f).ceil
+
+      group_count.times { 
+        grp = Group.new 
+        group_size.times {  
+          grp.students << students.pop
+        }
+        grp.save!
+        groups_array << grp
       }
-      grp.save!
+
+      raise 'Something is wrong ... '+students.size.to_s if students.size > 0
+      population << groups_array
     }
 
-    raise 'Something is wrong ... '+students.size.to_s if students.size > 0
-    return Group.all.size
+    return population
+  end
+
+  def GeneticMatcher.step_two_fitness(population_array)
+    population_scores = Array.new
+
+    population_array.each do |groups|
+      minimum_score = -999
+      population_sample = Array.new
+
+      groups.each do |group|
+        new_score = DiversityScore.calculate_for_group(group)
+        if new_score > minimum_score then minimum_score = new_score end
+        population_sample << { :group => group, :score => new_score }
+      end
+
+      population_scores << { :sample => population_sample, :min_score => minimum_score }
+    end
+
+    return population_scores
+
   end
   
 end

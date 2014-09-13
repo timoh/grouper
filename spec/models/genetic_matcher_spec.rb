@@ -8,7 +8,7 @@ RSpec.describe GeneticMatcher, :type => :model do
 
     expect( Group.all.size ).to eq 0
 
-    GeneticMatcher.step_one_start 
+    GeneticMatcher.step_one_start(10)
 
     expect( Group.all.size ).to be > 0
     expect( Student.first.group ).to be_truthy

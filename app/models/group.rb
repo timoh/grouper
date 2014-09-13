@@ -8,8 +8,8 @@ class Group
 
   validates_presence_of :students
 
-  before_save :calculate_diversity_score
-  before_save :calculate_size
+  before_update :calculate_diversity_score
+  before_update :calculate_size
 
   def Group.calculate_group_size(options = {}) #group size will default to 4-5
     student_count = Student.all.length
