@@ -101,7 +101,7 @@ class Matcher
           first_student = unassigned_students.first
           group_baseline_availability_req = first_student.availability.split.first # take first availability item from student and make it the point of the group
           
-          puts 'Group baseline availability requirement is: '+group_baseline_availability_req.to_s
+          #puts 'Group baseline availability requirement is: '+group_baseline_availability_req.to_s
 
           group.students << first_student
           group.save!
@@ -112,7 +112,7 @@ class Matcher
         candidate = unassigned_students.pop
 
         if candidate.availability.split.first.include?(group_baseline_availability_req)
-          puts 'Successful match:'+candidate.availability.first.split.to_s
+          #puts 'Successful match:'+candidate.availability.first.split.to_s
           group.students << candidate
           group.save!
         end

@@ -21,7 +21,6 @@ class Student
   field :overlap_hash, type: Hash
 
   belongs_to :group, dependent: :nullify
-  has_and_belongs_to_many :overlap_scores
 
   validates_uniqueness_of :student_num
   validates_numericality_of :years_fluency, :grade_guess, :hours_per_week, :introverted, :teamwork_ability, :teamwork_enjoyment
