@@ -28,6 +28,52 @@ class Student
   validates_length_of :student_num, minimum: 5, maximum: 10
   validates_presence_of :availability, :survey_answered, :student_num, :grade_guess, :hours_per_week, :availability_d, :availability_a, :availability_n
 
+  def Student.transform_survey_availability_to_char_string(survey_avail_string)
+    student_availability = String.new
+
+    if availability_string.include?('During')
+      student_availability << 'D'
+    end
+
+    if availability_string.include?('After')
+      student_availability << 'A'
+    end
+
+    if availability_string.include?('Non')
+      student_availability << 'N'
+    end
+
+    return student_availability.to_s
+  end
+
+  def populate_availability_flags
+    availability_string = self.availability
+
+    raise 'Availability string is not populated!' if availability_string.length <= 0
+
+    if availability_string.include?("D")
+      self.availability_d = true
+    else
+      self.availability_d = false
+    end
+
+    if availability_string.include?("A")
+      self.availability_a = true
+    else
+      self.availability_a = false
+    end
+
+    if availability_string.include?("N")
+      self.availability_n = true
+    else
+      self.availability_n = false
+    end
+
+    raise 'Flag population failed!: '+availability_string.to_s unless ( self.availability_d = true || self.availability_a = true || self.availability_n = true )
+
+    return true
+  end
+
   def Student.ingest_csv
     dump = RawSurveyToGroup.dump_for_ingest
 
@@ -51,30 +97,19 @@ class Student
 
       #Student availability
 
-      student_availability = String.new
+      
+      # Availability
+      # first, transform the row data to the 'DAN' char string
+      avail_string = Student.transform_survey_availability_to_char_string(row[2])
 
-      if row[2].include?('During')
-        student_availability << 'D'
-        student.availability_d = true
-      else
-        student.availability_d = false
-      end
+      # check that string has at least 'D', 'A' or 'N'
+      raise 'Availability string is invalid' unless ( avail_string.include?('D') || avail_string.include?('A') || avail_string.include?('N') )
+      
+      # put this into the db record
+      self.availability = avail_string
 
-      if row[2].include?('After')
-        student_availability << 'A'
-        student.availability_a = true
-      else
-        student.availability_a = false
-      end
-
-      if row[2].include?('Non')
-        student_availability << 'N'
-        student.availability_n = true
-      else
-        student.availability_n = false
-      end
-
-      student.availability = student_availability
+      # next, populate the availability true|false flags with the method
+      student.populate_availability_flags
 
       #Student gender
       if row[3] == 'Female'
@@ -195,8 +230,7 @@ class Student
       student.save!
     end
 
-      return array_of_students.length
-
+    return array_of_students.length
   end
 
 end

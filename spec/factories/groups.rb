@@ -2,5 +2,14 @@
 
 FactoryGirl.define do
   factory :group do
+  	
+  	students {
+  		studs = Array.new
+  		5.times {
+  			studs << FactoryGirl.create(:student)
+  		}
+  		studs
+  	}
+
   end
 end
