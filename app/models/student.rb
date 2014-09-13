@@ -28,6 +28,41 @@ class Student
   validates_length_of :student_num, minimum: 5, maximum: 10
   validates_presence_of :availability, :survey_answered, :student_num, :grade_guess, :hours_per_week, :availability_d, :availability_a, :availability_n
 
+
+  def Student.prepare_unassigned_students_sorted_array
+    unassigned_students = Array.new
+
+    # load unassigned students into the unassigned_students array (instead of the lazy load mongoid search object)
+    ua_students = Student.where(group_id: nil).order_by(:availability.asc) # return only those students that do not have a group
+
+    # add items in array in reverse order for "pop" to work correctly
+
+    # first, add the most flexible students into the bottom of the stack
+    ua_students.each do |student|
+      if student.availability.length == 3
+        unassigned_students << student
+      end
+    end
+
+    # second, add the second most flexible students into the bottom of the stack
+    ua_students.each do |student|
+      if student.availability.length == 2
+        unassigned_students << student
+      end
+    end
+
+    # last, add the most inflexible students on the top of the stack
+    ua_students.each do |student|
+      if student.availability.length == 1
+        unassigned_students << student
+      end
+    end
+
+    return unassigned_students
+
+  end
+
+
   def Student.transform_survey_availability_to_char_string(survey_avail_string)
     student_availability = String.new
 

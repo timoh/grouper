@@ -81,7 +81,7 @@ class Matcher
   end
 
   def Matcher.create_one_sorted_group(options = {})
-    unassigned_students = Matcher.prepare_unassigned_students_sorted_array
+    unassigned_students = Student.prepare_unassigned_students_sorted_array
 
     if unassigned_students.size <= 0 then raise '0 unassigned students -- cannot create a new group!' end
 
@@ -90,7 +90,7 @@ class Matcher
     while(unassigned_students.length > 0)
       group = Group.new
       group_full = false
-      unassigned_students = Matcher.prepare_unassigned_students_sorted_array
+      unassigned_students = Student.prepare_unassigned_students_sorted_array
       group_baseline_availability_req = "" # this is a string with either D, A or N to denote what is the first student's requirement
 
       puts 'Unassigned students to be put into groups: '+unassigned_students.size.to_s
@@ -117,7 +117,7 @@ class Matcher
           group.save!
         end
 
-        if Matcher.prepare_unassigned_students_sorted_array.length <= 0 then break end
+        if Student.prepare_unassigned_students_sorted_array.length <= 0 then break end
         if group.students.count >= group_size then group_full = true end
         # puts 'Group current size: '+group.students.size.to_s+' vs. max group size: '+group_size.to_s
       end
@@ -128,39 +128,6 @@ class Matcher
           raise 'Group size is not big enough!'
         end
     end
-  end
-
-  def Matcher.prepare_unassigned_students_sorted_array
-    unassigned_students = Array.new
-
-    # load unassigned students into the unassigned_students array (instead of the lazy load mongoid search object)
-    ua_students = Student.where(group_id: nil).order_by(:availability.asc) # return only those students that do not have a group
-
-    # add items in array in reverse order for "pop" to work correctly
-
-    # first, add the most flexible students into the bottom of the stack
-    ua_students.each do |student|
-      if student.availability.length == 3
-        unassigned_students << student
-      end
-    end
-
-    # second, add the second most flexible students into the bottom of the stack
-    ua_students.each do |student|
-      if student.availability.length == 2
-        unassigned_students << student
-      end
-    end
-
-    # last, add the most inflexible students on the top of the stack
-    ua_students.each do |student|
-      if student.availability.length == 1
-        unassigned_students << student
-      end
-    end
-
-    return unassigned_students
-
   end
 
   def Matcher.group_and_count
