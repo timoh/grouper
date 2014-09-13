@@ -14,7 +14,11 @@ class GeneticMatcher
     two_most_fit_parents = GeneticMatcher.step_three_one_selection(initial_results)
 
     #   3.2 [Crossover] With a crossover probability cross over the parents to form a new offspring (children). If no crossover was performed, offspring is an exact copy of parents.
+    # --- not applicable due to group constraints
+
     #   3.3 [Mutation] With a mutation probability mutate new offspring at each locus (position in chromosome).
+    new_feasible_population = GeneticMatcher.step_three_two_mutation(two_most_fit_parents)
+
     #   3.4 [Accepting] Place new offspring in a new population
     # 4. [Replace] Use new generated population for a further run of algorithm
     # 5. [Test] If the end condition is satisfied, stop, and return the best solution in current population
@@ -22,8 +26,59 @@ class GeneticMatcher
 
   end
 
-  def GeneticMatcher.step_three_two_crossover(two_most_fit_parents)
+  def GeneticMatcher.mutate(population)
+    new_population = Array.new
 
+    # randomize the groups so that we can pick two random groups instead of the first two groups all the time
+    population = population.to_a.shuffle
+
+    # take the first two random groups out of the population
+    counter = 2
+    first_pop.each do |group|
+      if counter > 0
+        two_first_ones << group
+      end
+      counter -= 1
+    end
+
+    # so this is the first random group picked 
+    first_first = Group.new
+
+    # TODO: now we need to do the swap of students between two groups (from the same population to avoid duplicates or omissions of students!)
+
+    #first_first.students = 
+
+    # << two_first_ones[0].students.to_a.shuffle.first
+    #two_first_ones[1].students.to_a.shuffle.first
+
+    return new_population
+  end
+
+  def GeneticMatcher.step_three_two_mutation(two_most_fit_parents)
+    new_feasible_population = Array.new
+
+    first_pop = two_most_fit_parents.pop
+    second_pop = two_most_fit_parents.pop
+
+    # check out what the highest score is of the most fit parents
+    highest_score = 0
+    if first_pop[:min_score] > highest_score then highest_score = first_pop[:min_score] end
+    if second_pop[:min_score] > highest_score then highest_score = second_pop[:min_score] end 
+
+    # take two random groups in a population, and create a new population, where people in these two groups are switched between each other
+
+    # shuffle the first population's groups and take the first two, and then create a new population where these two ones have switched members
+    first_pop = first_pop[:sample] #.shuffle (??)
+    second_pop = second_pop[:sample]
+
+    # TODO: this is wrong! should only return something if the new mutation is better than the original!
+
+    # so do a score check for both new (first & second) new populations
+    
+    new_feasible_population << GeneticMatcher.mutate(first_pop)
+    new_feasible_population << GeneticMatcher.mutate(second_pop)
+
+    return new_feasible_population
   end
 
   def GeneticMatcher.step_three_one_selection(earlier_batch)
