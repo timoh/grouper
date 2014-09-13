@@ -207,7 +207,7 @@ class Matcher
     group_size = Group.calculate_group_size(options = {:min_size => 4, :max_size => 5})
 
     # attempt to maximize logistical availability overlap by starting to attempt to create a team from those who have maximum overlap (each member has a minimum overlap score with each team member that is as high as possible)
-      Matcher.calculate_overlap_scores
+      OverlapScore.calculate_overlap_scores
 
       #then create groups with the needed size, where you maximize the minimum overlapscore
       all_scores = OverlapScore.all.sort(score: -1) # descending order

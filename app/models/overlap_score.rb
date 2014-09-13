@@ -3,7 +3,7 @@ class OverlapScore
 
   field :score, type: Integer
 
-  #has_and_belongs_to_many :students # should have two scores each
+  has_and_belongs_to_many :students # should have two scores each
 end
 
 def OverlapScore.count_all_group_scores
